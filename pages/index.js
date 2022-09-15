@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import {ArrowForward, FilterAlt} from '@mui/icons-material'
 import {useRouter} from 'next/router'
-import {deepPurple} from '@mui/material/colors'
+import {deepPurple, grey} from '@mui/material/colors'
 import {
     Checkbox,
     Typography,
@@ -48,7 +48,6 @@ export default function Home() {
 
     useEffect(() => {
         if (Object.keys(checkedPokemon).length > 0 && !isSnackbarVisible) {
-            console.log('kesini')
             setIsSnackbarVisible(true)
         }
     }, [checkedPokemon])
@@ -78,13 +77,19 @@ export default function Home() {
     const checkedPokemonLength = checkedPokemonName.length
 
     return (
-        <Box sx={{width: '100vw', height: '100vh', padding: '20px 400px'}}>
-            <Stack>
+        <Stack
+            alignItems="center"
+            py={2}
+            spacing={5}
+            sx={{xs: {px: 10}, md: {px: 30}, lg: {px: 50}}}
+        >
+            <Stack width="50%">
                 <Stack
                     direction="row"
                     justifyContent="flex-end"
                     alignItems="center"
                     spacing={2}
+                    width="100%"
                 >
                     <Button
                         variant="text"
@@ -104,80 +109,86 @@ export default function Home() {
                     </Badge>
                 </Stack>
 
-                <Typography>Pokedex ({data?.length})</Typography>
-
-                <InfiniteScroll
-                    dataLength={data.length}
-                    hasMore={!!next}
-                    loader={<AtomLoading />}
-                    next={() => {
-                        setPage((prev) => prev + 1)
-                    }}
-                    endMessage={
-                        <p style={{textAlign: 'center'}}>
-                            <b>Yay! You have seen it all</b>
-                        </p>
-                    }
-                >
-                    <Grid container spacing={2} columns={12} maxWidth={700}>
-                        {data.map((pokemon, index) => (
-                            <Grid item key={index} sx={12} md={6}>
-                                <AtomCard elevation={1}>
-                                    <Stack
-                                        direction="row"
-                                        justifyContent="flex-end"
-                                        alignItems="center"
-                                    >
-                                        {isComparing && (
-                                            <Checkbox
-                                                name={pokemon.name}
-                                                onClick={markPokemon}
-                                                color="secondary"
-                                                disabled={
-                                                    !checkedPokemonName.includes(
-                                                        pokemon.name,
-                                                    ) &&
-                                                    checkedPokemonLength ===
-                                                        MAX_COMPARED_ITEM
-                                                }
-                                                checked={checkedPokemonName.includes(
-                                                    pokemon.name,
-                                                )}
-                                            />
-                                        )}
-                                    </Stack>
-
-                                    <Typography>{pokemon.name}</Typography>
-                                </AtomCard>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </InfiniteScroll>
-
-                <Snackbar
-                    ClickAwayListenerProps={{onClickAway: () => null}}
-                    onClose={() => setIsSnackbarVisible(false)}
-                    severity="info"
-                    open={isSnackbarVisible && checkedPokemonLength > 0}
-                    TransitionComponent={(props) => {
-                        return <Slide {...props} direction="up" />
-                    }}
-                    key={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                >
-                    <SnackbarContent
-                        action={snackbarAction(checkedPokemonLength)}
-                        style={{
-                            backgroundColor: deepPurple[300],
-                        }}
-                        message={`Comparing: ${Object.keys(
-                            checkedPokemon,
-                        )?.join(', ')}`}
-                    />
-                </Snackbar>
+                <Stack justifyContent="center" direction="row" width="100%">
+                    <Typography fontSize={30} fontWeight={500}>
+                        Pokedex ({data?.length})
+                    </Typography>
+                </Stack>
             </Stack>
-        </Box>
+
+            <InfiniteScroll
+                dataLength={data.length}
+                hasMore={!!next}
+                loader={<AtomLoading />}
+                next={() => {
+                    setPage((prev) => prev + 1)
+                }}
+                endMessage={
+                    <p style={{textAlign: 'center'}}>
+                        <b>Yay! You have seen it all</b>
+                    </p>
+                }
+            >
+                <Grid container spacing={2} columns={24} maxWidth={700}>
+                    {data.map((pokemon, index) => (
+                        <Grid item key={index} sm={24} lg={12}>
+                            <Stack
+                                alignItems="center"
+                                direction="row"
+                                justifyContent="center"
+                                minHeight={100}
+                                borderRadius={2}
+                                boxShadow={2}
+                                border={`1px solid ${grey[200]}`}
+                            >
+                                {isComparing && (
+                                    <Checkbox
+                                        name={pokemon.name}
+                                        onClick={markPokemon}
+                                        color="secondary"
+                                        disabled={
+                                            !checkedPokemonName.includes(
+                                                pokemon.name,
+                                            ) &&
+                                            checkedPokemonLength ===
+                                                MAX_COMPARED_ITEM
+                                        }
+                                        checked={checkedPokemonName.includes(
+                                            pokemon.name,
+                                        )}
+                                    />
+                                )}
+
+                                <Typography>{pokemon.name}</Typography>
+                            </Stack>
+                        </Grid>
+                    ))}
+                </Grid>
+            </InfiniteScroll>
+
+            <Snackbar
+                ClickAwayListenerProps={{onClickAway: () => null}}
+                onClose={() => setIsSnackbarVisible(false)}
+                severity="info"
+                open={isSnackbarVisible && checkedPokemonLength > 0}
+                TransitionComponent={(props) => {
+                    return <Slide {...props} direction="up" />
+                }}
+                key={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                <SnackbarContent
+                    action={snackbarAction(checkedPokemonLength)}
+                    style={{
+                        backgroundColor: deepPurple[300],
+                    }}
+                    message={`Comparing: ${Object.keys(checkedPokemon)?.join(
+                        ', ',
+                    )}`}
+                />
+            </Snackbar>
+        </Stack>
     )
 }

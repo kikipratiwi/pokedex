@@ -6,7 +6,6 @@ const usePagination = (url) => {
     const [data, setData] = useState([])
     const [page, setPage] = useState(0)
     const [next, setNext] = useState()
-    const [count, setCount] = useState(0)
 
     async function fetchData(url) {
         try {
@@ -17,7 +16,6 @@ const usePagination = (url) => {
                 },
             })
 
-            setCount(response.count)
             setNext(response.next)
             setData((prev) => [...prev, ...response.results])
         } catch (error) {
@@ -26,9 +24,7 @@ const usePagination = (url) => {
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            fetchData(url)
-        }, 1000)
+        fetchData(url)
     }, [page])
 
     return {
